@@ -1,0 +1,353 @@
+# 2.1.1  Создайте на сервере для 1 практики ключ ssh при помощи программы ssh-keygen
+
+eltex-pg2-v15@eltex:~$ ssh-keygen -t rsa -C "key"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/eltex-pg2-v15/.ssh/id_rsa): 
+Created directory '/home/eltex-pg2-v15/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/eltex-pg2-v15/.ssh/id_rsa 
+Your public key has been saved in /home/eltex-pg2-v15/.ssh/id_rsa.pub 
+# Далее происходит вывод созданного ключа.
+The key fingerprint is:
+
+
+# 2.1.2 Скопируйте созданный ключ на сервер для 2 практики для пользователя root при помощи программы ssh-copy-id
+
+eltex-pg2-v15@eltex:~$ cd .ssh/ eltex-pg2-v15@eltex:~/.ssh 1s
+id_rsa id_rsa.pub
+
+eltex-pg2-v15@eltex:~/.ssh ssh-copy-id -i /home/eltex-pg2-v15/.ssh/id_rsa.pub root@172.16.9.215 
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/eltex-pg2-v15/.ssh/id_rsa.pub" 
+The authenticity of host 172.16.9.215 (172.16.9.215) can't be established.
+ED25519 key fingerprint is SHA256:YNVzj+RtetZ£Xv5XUn/CUjeEcaMD4eg3jy8EuGGIS+o.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key (s), to filter out any that are already installed 
+/usr/bin/ssh-copy-id: INFO: 1 key (s) remain to be installed -- if you are prompted now it is to install the new key
+root@172.16.9.215's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with: "ssh root@172.16.9.215""
+and check to make sure that only the key(s) you wanted were added.
+
+# 2.1.3 Подключитесь к серверу для 2 практики под пользователем root и сравните содержимое файла открытого ключа на сервере 1 ~/.ssh/*.pub и файла ~/.ssh/authorized_keys на сервере для 2 практики, а так же права доступа для каждого из файлов
+
+ltex-pg2-v15@eltex:~/.ssh$ ls -al
+total 24
+drwx------ 2 eltex-pg2-v15 eltex-pg2-v15 4096 Mar 17 18:20 .
+drwxr-xr-x 4 eltex-pg2-v15 eltex-pg2-v15 4096 Mar 17 18:14 ..
+-rw-‒‒‒‒‒‒ 1 eltex-pg2-v15 eltex-pg2-v15 2578 Mar 17 18:14 id_rsa 
+-rw-r--r-- 1 eltex-pg2-v15 eltex-pg2-v15  557 Mar 17 18:14 id_rsa.pub 
+-rw-‒‒‒‒‒‒ 1 eltex-pg2-v15 eltex-pg2-v15  978 Mar 17 18:20 known hosts 
+-rw-‒‒‒‒‒‒ 1 eltex-pg2-v15 eltex-pg2-v15  142 Mar 17 18:20 known_hosts.old 
+
+root@eltex-practice2-pg2-v15:~/.ssh# ls -al
+total 12
+drwx------ 2 root root 4096 Mar 17 11:26
+drwx------ 6 root root 4096 Mar 17 11:26
+-rw‒‒‒‒‒‒- 1 root root 557 Mar 17 11:20 authorized_keys 
+
+# Вывод: Изменились права доступа
+
+# 2.1.4 Создайте пользователя user1 при помощи команды useradd, укажите необходимость созданиядомашнего каталога и shell /bin/bash. Создайте пароль пользователю user1
+
+root@eltex-practice2-pg2-v15:~/.ssh# sudo useradd -m -s /bin/bash user1 
+root@eltex-practice2-pg2-v15:~/.ssh# sudo passwd user1
+New password:
+Retype new password:
+passwd: password updated successfully 
+
+# 2.1.5 Создайте пользователя user2 и user3 при помощи команды adduser
+
+root@eltex-practice2-pg2-v15:~/.ssh# sudo adduser user2 
+info: Adding user `user2'
+info: Selecting UID/GID from range 1000 to 59999 ...
+info: Adding new group `user2' (1002) ...
+info: Adding new user `user2' (1002) with group user2 (1002) ...
+info: Creating home directory `/home/user2' ...
+info: Copying files from `/etc/skel' ...
+New password:
+Retype new password:
+passwd: password updated successfully
+Changing the user information for user2
+Enter the new value, or press ENTER for the default
+    Full Name []:
+    Room Number []: 
+    Work Phone []:
+    Home Phone []:
+    Other []:
+Is the information correct? [Y/n] Y
+info: Adding new user user2' to supplemental / extra groups users' 
+info: Adding user 'user2' to group 'users'
+
+root@eltex-practice2-pg2-v15:~/.ssh# sudo adduser user3
+info: Adding user 'user3' ...
+info: Selecting UID/GID from range 1000 to 59999 ...
+info: Adding new group "user3' (1003) ...
+info: Adding new user `user3' ...
+(1003) with group user3 (1003)
+info: Creating home directory `/home/user3' ...
+info: Copying files from `/etc/skel' ... 
+New password:
+Retype new password:
+passwd: password updated successfully
+Changing the user information for user3
+Enter the new value, or press ENTER for the default
+    Full Name []:
+    Room Number []:
+    Work Phone []:
+    Home Phone []:
+    Other []:
+Is the information correct? [Y/n] y
+info: Adding new user `user3' to supplemental / extra groups 'users' 
+info: Adding user `user3' to group 'users' ...
+
+# 2.1.6.  Для пользователя user3 смените shell на /usr/sbin/nologin (manusermod), выполните вход под этим пользователем при помощи утилиты su, сначала без дополнительных параметров, затем с явным указанием shell /bin/bash в параметрах su. Выполните logout
+
+root@eltex-practice2-pg2-v15:~/.ssh# sudo usermod -s /usr/sbin/nologin user3 
+root@eltex-practice2-pg2-v15:~/.ssh# su user3
+This account is currently not available.
+root@eltex-practice2-pg2-v15:~/.ssh# su -s /bin/bash user3
+user3@eltex-practice2-pg2-v15:/root/.ssh$
+
+user3@eltex-practice2-pg2-v15: /root/.ssh$ logout 
+bash: logout: not login shell: use `exit' 
+user3@eltex-practice2-pg2-v15: /root/.ssh$ exit
+exit
+root@eltex-practice2-pg2-v15:~/.ssh#
+
+# 2.1.7 Создайте новую группу и добавьте её для всех пользователей user* как дополнительную, посмотрите список групп всех пользователей user*
+
+root@eltex-practice2-pg2-v15:/etc# sudo groupadd group1
+root@eltex-practice2-pg2-v15:/etc# sudo usermod -aG group1 user1
+user1 : user1 group1 
+root@eltex-practice2-pg2-v15:/etc# sudo usermod -aG group1 user2 
+user2 : user2 users group1
+root@eltex-practice2-pg2-v15:/etc# sudo usermod -aG group1 user3 
+user3 : user3 users group1
+
+# 2.1.8.  Создайте каталог /opt/share и назначьте группу из предыдущего пункта его владельцем, установите на этот каталог бит SGID, права для группы rwx.
+
+root@eltex-practice2-pg2-v15:/etc# sudo chgrp group1 /opt/share
+root@eltex-practice2-pg2-v15:/etc# sudo chmod g=rwx /opt/share
+root@eltex-practice2-pg2-v15:/etc# sudo chmod g+s /opt/share
+
+# 2.1.9.  Для user1 задайте перманентно umask, снимающий право чтения для «прочих»
+
+root@eltex-practice2-pg2-v15:/etc# sudo nano /home/user1/.bashrc
+root@eltex-practice2-pg2-v15:/etc# su -s /bin/bash user1
+
+# В конец файла .bashrc добавляем строку umask = 0027
+
+user1@eltex-practice2-pg2-v15:~$ source .bashrc
+user1@eltex-practice2-pg2-v15:~$ umask
+0027
+user1@eltex-practice2-pg2-v15:~$ touch test.cpp
+user1@eltex-practice2-pg2-v15:~$ ls -al
+total 20
+drwxr-x--- 2 user1 user1 4096 Mar 17 12:07 .
+drwxr-xr-x 6 root  root  4096 Mar 17 11:30 .. 
+-rw-r--r-- 1 user1 user1  220 Mar 31  2024 .bash_logout
+-rw-r--r-- 1 user1 user1 3783 Mar 17 12:05 .bashrc
+-rw-r--r-- 1 user1 user1  807 Mar 31  2024 .profile
+-rw-r----- 1 user1 user1    0 Mar 17 12:07 test.cpp
+
+# 2.1.10. Создайте каждым из пользователей новые файлы в каталоге /opt/share, удалите файлы созданные другими пользователями
+
+user1@eltex-practice2-pg2-v15:~$ touch /opt/share/file_from_user1 
+user1@eltex-practice2-pg2-v15:~$ exit
+exit
+
+root@eltex-practice2-pg2-v15:/# su -s /bin/bash user2
+user2@eltex-practice2-pg2-v15:/$ touch /opt/share/file_from_user2 
+user2@eltex-practice2-pg2-v15:/$ exit
+exit
+
+root@eltex-practice2-pg2-v15:/# su -s /bin/bash user3 
+user3@eltex-practice2-pg2-v15:/$ touch /opt/share/file_from_user3
+user3@eltex-practice2-pg2-v15:/$ touch /opt/share/file2_from_user3 
+user3@eltex-practice2-pg2-v15:/$ exit
+exit
+
+user3@eltex-practice2-pg2-v15:/$ rm opt/share/file_from_user1
+rm: remove write-protected regular empty file 'opt/share/file_from_userl'? yes 
+user3@eltex-practice2-pg2-v15:/$ rm opt/share/file_from_user2 
+user3@eltex-practice2-pg2-v15:/$
+
+# 2.1.11. Повторите предыдущий пункт, предварительно установив sticky bit на каталоге /opt/share
+
+user2@eltex-practice2-pg2-v15:/$ rm /opt/share/file_from_user3
+rm: cannot remove '/opt/share/file_from_user3': Operation not permitted 
+user2@eltex-practice2-pg2-v15:/$ rm /opt/share/file_from_user1
+rm: remove write-protected regular empty file /opt/share/file_from_userl'? y 
+rm: cannot remove '/opt/share/file_from_userl': Operation not permitted 
+
+# 2.1.12. Разрешите user1 выполнять привилегированную команду dmesg при помощи команды sudo,а user2 – при помощи скрипта на языке bash с установленным флагом SUID
+
+root@eltex-practice2-pg2-v15:/# sudo usermod -aG sudo user1 
+root@eltex-practice2-pg2-v15:/# sudo visudo
+
+# В файле visudo добавляем  
+# %admin ALL=(ALL) ALL
+#
+# %sudo ALL=(ALL:ALL) ALL
+# user1 ALL=(ALL) /usr/bin/dmesg
+
+root@eltex-practice2-pg2-v15:/# su -s /bin/bash user1
+To run a command as administrator (user "root"), use "sudo <command>". 
+See "man sudo_root" for details.
+
+user1@eltex-practice2-pg2-v15:/$ dmesg
+dmesg: read kernel buffer failed: Operation not permitted user1@eltex-practice2-pg2-v15:/$ sudo dmesg
+[sudo] password for user1:
+[0.000000] Linux version 6.8.0-55-generic (buildd@lcy02-amd64-095) 
+ntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #57-Ubuntu
+
+# вторая часть
+
+root@eltex-practice2-pg2-v15:/usr/local/bin# sudo chown root:root /usr/local/bin/dmesg_script.sh
+sudo chmod u+s /usr/local/bin/dmesg_script.sh
+root@eltex-practice2-pg2-v15:/usr/local/bin#
+root@eltex-practice2-pg2-v15:/usr/local/bin# ls -1 /usr/local/bin/dmesg_script.sh
+-rw-r--r-- 1 root root 27 Mar 17 12:47 /usr/local/bin/dmesg_script.sh
+root@eltex-practice2-pg2-v15:/usr/local/bin# ls -1 /usr/local/bin/dmesg_script.sh
+-rw-r--r-- 1 root root 27 Mar 17 12:47 /usr/local/bin/dmesg_script.sh
+root@eltex-practice2-pg2-v15:/usr/local/bin‡ sudo chmod u+s /usr/local/bin/dmesg_script.sh 
+root@eltex-practice2-pg2-v15:/usr/local/bin# ls -1 /usr/local/bin/dmesg_script.sh
+-rwSr--r-- 1 root root 27 Mar 17 12:47 /usr/local/bin/dmesg_script.sh
+
+# сам скрипт 
+# GNU nano 7.2
+# #!/bin/bash
+# /usr/bin/dmesg
+
+# 2.1.13. Для всех пользователей user* задайте время действия пароля – 10 дней.
+
+root@eltex-practice2-pg2-v15:~# nano time_users.sh 
+
+# напишем для этого скрипт
+# time_users.sh 
+# for user in $(getent passwd | awk -F: '/^user/ {print $1}'); do 
+#   sudo chage --maxdays 10 "$user"
+# done
+
+root@eltex-practice2-pg2-v15:~# chmod +x time_users.sh 
+root@eltex-practice2-pg2-v15:~# ./time_users.sh 
+root@eltex-practice2-pg2-v15:~# sudo chage -1 user1
+Last password change                                : Mar 17, 2025
+Password expires                                    : Mar 27, 2025
+Password inactive                                   : never
+Account expires                                     : never
+Minimum number of days between password change      : 0
+Maximum number of days between password change      : 10
+Number of days of warning before password expires   : 7
+
+# 2.1.14. Отредактируйте файл /etc/motd, вписав туда свое имя и фамилию
+
+root@eltex-practice2-pg2-v15: /etc# sudo nano /etc/motd
+root@eltex-practice2-pg2-v15: /etc# 
+
+# 2.1.15. Создайте копию содержимого каталога /etc в каталог /root/etc_backup при помощи программы rcync
+
+root@eltex-practice2-pg2-v15:/etc# rsync -av /etc/ /root/etc_backup/ 
+sending incremental file list
+created directory /root/etc_backup
+/
+.pwd.lock
+.resolv.conf.systemd-resolved.bak
+.updated
+
+# Используемые атрибуты:
+# -a: Включает режим архивирования, который сохраняет права доступа, владельца, временные метки и символические ссылки.
+# -v: Включает режим подробного вывода, чтобы видеть процесс копирования.
+# /etc/: Источник — каталог /etc (слэш в конце указывает, что копируется содержимое каталога, а не сам каталог).
+# /root/etc_backup/: Назначение — каталог /root/etc_backup (если он не существует, он будет создан автоматически).
+
+# 2.1.16. Заархивируйте содержимое каталога /root/etc_backup архиватором tar, используйте алгоритмы сжатия gzip, bzip2, 7zip, сравните размеры полученных файлов
+root@eltex-practice2-pg2-v15:/etc# tar -czvf etc_backup.tar.gz /root/etc_backup
+root@eltex-practice2-pg2-v15:/etc# ar -cjvf etc_backup.tar.bz2 /root/etc_backup
+root@eltex-practice2-pg2-v15:/etc# 7z a -t7z etc_backup.7z /root/etc_backup
+
+root@eltex-practice2-pg2-v15: /etc# ls -lh etc_backup.* 
+-rw-r--r-- 1 root root 4.5M Mar 24 05:46 etc_backup.7z
+-rw-r--r-- 1 root root 571K Mar 24 05:42 etc_backup.tar.bz2 
+-rw-r--r-- 1 root root 602K Mar 24 05:42 etc_backup.tar.gz 
+
+# 2.1.17. Отредактируйте файл /etc/motd, вписав туда текущую дату и время, синхронизируйте каталог /root/etc_backup с каталогом /etc при помощи rsync, добавьте файл motd в архив, сжатый gzip
+
+root@eltex-practice2-pg2-v15:/etc# echo "Tekyшая дата и время: $(date)" | sudo tee /etc/motd 
+Текущая дата и время: Mon Mar 24 05:48:27 AM UTC 2025
+root@eltex-practice2-pg2-v15:/etc# sudo rsync -av /etc/ /root/etc_backup/
+sending incremental file list
+./
+etc_backup.7z etc_backup.tar.bz2
+etc_backup.tar.gz
+motd
+
+sent 5,968,789 bytes received 344 bytes 11,938,266.00 bytes/sec
+total size is 8,336,421 speedup is 1.40
+root@eltex-practice2-pg2-v15:/etc# sudo tar -czvf motd_backup.tar.gz /etc/motd
+tar: Removing leading / from member names
+/etc/motd
+
+# 2.1.18. Сравните содержимое архива, упакованного bzip2 с сорержимым каталога /root/etc_backup
+
+root@eltex-practice2-pg2-v15:~/etc_backup# mkdir /tmp/etc_backup_extracted
+root@eltex-practice2-pg2-v15:~/etc_backup# tar -xjvf etc_backup.tar.bz2 -C /tmp/etc_backup_extracted
+
+root@eltex-practice2-pg2-v15:~/etc_backup# diff -r /tmp/etc_backup_extracted /root/etc_backup
+Only in /root/etc_backup: adduser.conf
+Only in /root/etc_backup: alternatives 
+Only in /root/etc_backup: apparmor 
+Only in /root/etc_backup: apparmor.d 
+Only in /root/etc_backup: apport 
+Only in /root/etc_backup: apt
+Only in /root/etc_backup: bash.bashrc
+Only in /root/etc_backup: bash_completion
+Only in /root/etc_backup: bash_completion.d
+Only in /root/etc_backup: bindresvport.blacklist
+Only in /root/etc_backup: binfmt.d
+Only in /root/etc_backup: byobu
+Only in /root/etc_backup: ca-certificates
+Only in /root/etc_backup: ca-certificates.conf Only in /root/etc_backup: cloud
+Only in /root/etc_backup: console-setup
+
+# 2.1.19 Распакуйте архивы etc_backup, упакованные gzip и 7zip в каталоги /root/etc_backup_gzip и /root/etc_backup_7zip, сравните программой diff файлы motd в этих каталогах.
+
+root@eltex-practice2-pg2-v15:~/etc_backup# mkdir -p /root/etc_backup_gzip
+root@eltex-practice2-pg2-v15:~/etc_backup# tar -xzvf etc_backup.tar.gz -C /root/etc_backup_gzip
+root/etc_backup/
+root/etc_backup/rc4.d/
+root/etc backup/rc4.d/S01uuidd
+
+
+root@eltex-practice2-pg2-v15:~/etc_backup# mkdir -p /root/etc_backup_7zip 
+root@eltex-practice2-pg2-v15:~/etc_backup# 7z x etc_backup.7z -o/root/etc_backup_7zip
+
+7-Zip 23.01 (x64): Copyright (c) 1999-2023 Igor Pavlov: 2023-06-20 
+64-bit locale=en_US.UTF-8 Threads: 2 OPEN_MAX:1024
+
+Scanning the drive for archives:
+1 file, 4697642 bytes (4588 KiB)
+
+Extracting archive: etc_backup.7z
+--
+Path etc_backup.7z 
+Type = 7z
+Physical Size = 4697642 
+Headers Size = 20885
+Method LZMA2:24 BCJ
+Solid = +
+Blocks = 2
+
+Everything is Ok # everything in its right place! 
+
+Folders: 245
+Files: 1519 
+Size: 38884693
+Compressed: 4697642
+
+root@eltex-practice2-pg2-v15:~/etc_backup# diff /root/etc_backup_gzip/etc/motd /root/etc_backup_7zip/etc/motd
+# Размер файла не изменился
