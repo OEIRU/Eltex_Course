@@ -1,0 +1,137 @@
+# 3.1.1. Войдите под пользователем user1 из практики 2 (su - user1)
+
+root@eltex-practice2-pg2-v15:~# su - user1
+user1@eltex-practice2-pg2-v15:~$ 
+
+# 3.1.2. Подсчитайте количество процессов, имеющих несколько потоков выполнения
+
+user1@eltex-practice2-pg2-v15:~$ ps -eLf | awk '{print $2}' | sort | uniq -c | awk '$1 > 1 {count++} END {print count}'
+10
+
+# 3.1.3. Запустите top и настройте вывод полей с информацией о процессе следующим образом:
+#	+ удалите поля VIRT, RES, SHR;
+#	+ добавьте поле RUSER и сделайте так, чтобы это поле было показано после поля USER;
+
+Fields Management for window 4:Usr, whose current sort field is USER
+   Navigate with Up/Dn, Right selects for move then <Enter> or Left commits,
+   'd' or <Space> toggles display, 's' sets sort.  Use 'q' or <Esc> to end!
+
+* PID      = Process Id            CODE     = Code Size (KiB)       RSlk     = RES Locked (KiB)    
+* PPID     = Parent Process pid    DATA     = Data+Stack (KiB)      RSsh     = RES Shared (KiB)    
+* UID      = Effective User Id     SHR      = Shared Memory (KiB)   CGNAME   = Control Group name  
+* USER     = Effective User Name   nMaj     = Major Page Faults     NU       = Last Used NUMA node 
+* RUSER    = Real User Name        nMin     = Minor Page Faults     LOGID    = Login User Id       
+* TTY      = Controlling Tty       nDRT     = Dirty Pages Count     EXE      = Executable Path     
+* TIME+    = CPU Time, hundredths  WCHAN    = Sleeping in Function  RSS      = Res Mem (smaps), KiB
+* %CPU     = CPU Usage             Flags    = Task Flags <sched.h>  PSS      = Proportion RSS,  KiB
+* %MEM     = Memory Usage (RES)    CGROUPS  = Control Groups        PSan     = Proportion Anon, KiB
+* S        = Process Status        SUPGIDS  = Supp Groups IDs       PSfd     = Proportion File, KiB
+* COMMAND  = Command Name/Line     SUPGRPS  = Supp Groups Names     PSsh     = Proportion Shrd, KiB
+  RUID     = Real User Id          TGID     = Thread Group Id       USS      = Unique RSS, KiB     
+  SUID     = Saved User Id         OOMa     = OOMEM Adjustment      ioR      = I/O Bytes Read      
+  SUSER    = Saved User Name       OOMs     = OOMEM Score current   ioRop    = I/O Read Operations 
+  GID      = Group Id              ENVIRON  = Environment vars      ioW      = I/O Bytes Written   
+  GROUP    = Group Name            vMj      = Major Faults delta    ioWop    = I/O Write Operations
+  PGRP     = Process Group Id      vMn      = Minor Faults delta    AGID     = Autogroup Identifier
+  TPGID    = Tty Process Grp Id    USED     = Res+Swap Size (KiB)   AGNI     = Autogroup Nice Value
+  SID      = Session Id            nsIPC    = IPC namespace Inode   STARTED  = Start Time from boot
+  PR       = Priority              nsMNT    = MNT namespace Inode   ELAPSED  = Elapsed Running Time
+  NI       = Nice Value            nsNET    = NET namespace Inode   %CUU     = CPU Utilization     
+  nTH      = Number of Threads     nsPID    = PID namespace Inode   %CUC     = Utilization + child 
+  P        = Last Used Cpu (SMP)   nsUSER   = USER namespace Inode  nsCGROUP = CGRP namespace Inode
+  TIME     = CPU Time              nsUTS    = UTS namespace Inode   nsTIME   = TIME namespace Inode
+  VIRT     = Virtual Image (KiB)   LXC      = LXC container name  
+  SWAP     = Swapped Size (KiB)    RSan     = RES Anonymous (KiB) 
+  RES      = Resident Size (KiB)   RSfd     = RES File-based (KiB)
+
+# 3.1.4. В другом терминальном окне выполните команду passwd и оставьте ее в состоянии запроса текущего пароля
+
+user1@eltex-practice2-pg2-v15:/root$ passwd
+Changing password for user1.
+Current password: 
+
+# 3.1.5. Перейдите в терминальное окно с top и выполните следующие действия:
+#	+ выведите все процессы, для которых реальным пользователем 	
+#        является пользователь, которым вы вошли в сеанс;
+#	+ найдите процесс, запущенный командой passwd;
+#	+ отправьте этому процессу сигналы 15 (SIGTERM), 2 (SIGINT), 3 	(SIGQUIT), 9(SIGKILL)
+
+    PID    PPID   UID USER     RUSER    TTY          TIME+  %CPU  %MEM S COMMAND
+  29160   29154     0 root     user1    pts/1      0:00.00   0.0   0.1 S passwd  
+
+root@eltex-practice2-pg2-v15:~# kill -15 29160
+root@eltex-practice2-pg2-v15:~# ps aux | grep "29160"
+root       29160  0.0  0.0   9172  3712 pts/1    S+   02:49   0:00 passwd
+root       29166  0.0  0.0   6544  2304 pts/0    S+   02:53   0:00 grep --color=auto 29160
+
+root@eltex-practice2-pg2-v15:~# kill -2 29160
+root@eltex-practice2-pg2-v15:~# ps aux | grep "29160"
+root       29160  0.0  0.0   9172  3712 pts/1    S+   02:49   0:00 passwd
+root       29168  0.0  0.0   6544  2304 pts/0    S+   02:54   0:00 grep --color=auto 29160
+
+root@eltex-practice2-pg2-v15:~# kill -3 29160
+root@eltex-practice2-pg2-v15:~# ps aux | grep "29160"
+root       29160  0.0  0.0   9172  3712 pts/1    S+   02:49   0:00 passwd
+root       29170  0.0  0.0   6544  2304 pts/0    S+   02:54   0:00 grep --color=auto 29160
+
+root@eltex-practice2-pg2-v15:~# kill -9 29160
+root@eltex-practice2-pg2-v15:~# ps aux | grep "29160"
+root       29172  0.0  0.0   6544  2304 pts/0    S+   02:54   0:00 grep --color=auto 29160
+
+# 3.1.6. Выполните команду vim ~/file_task3.txt и нажмите Ctrl-Z
+
+user1@eltex-practice2-pg2-v15:/root$ vim ~/file_task3.txt
+^Z
+[1]+  Stopped                 vim ~/file_task3.txt
+
+# 3.1.7. Выполните команду sleep 600, нажмите Ctrl-Z и выполните команду jobs
+
+user1@eltex-practice2-pg2-v15:/root$ sleep 600
+^Z
+[2]+  Stopped                 sleep 600
+
+user1@eltex-practice2-pg2-v15:/root$ jobs
+[1]-  Stopped                 vim ~/file_task3.txt
+[2]+  Stopped                 sleep 600
+
+# 3.1.8. Последнее задание (sleep 600) сделайте фоновым
+
+user1@eltex-practice2-pg2-v15:/root$ sleep 600 &
+[3] 29184
+
+# 3.1.9. Измените число NICE у задания (sleep 600), сделав его равным 10
+
+user1@eltex-practice2-pg2-v15:/root$ nice -n 10 sleep 600 &
+[4] 29186
+
+# 3.1.10. Проверьте, что число NICE у этого задания изменилось
+user1@eltex-practice2-pg2-v15:/root$ ps aux | grep "sleep 600"
+user1      29179  0.0  0.0   5684  2048 pts/1    T    02:58   0:00 sleep 600
+user1      29184  0.0  0.0   5684  2048 pts/1    S    03:00   0:00 sleep 600
+user1      29186  0.0  0.0   5684  2048 pts/1    SN   03:02   0:00 sleep 600 # ВОТ ОН! 
+user1      29188  0.0  0.0   6676  2304 pts/1    S+   03:04   0:00 grep --color=auto sleep 600
+
+# 3.1.11. Сделайте задание vim ~/file_ task3.txt активным и выйдите из редактора
+
+user1@eltex-practice2-pg2-v15:/root$ jobs
+[1]-  Stopped                 vim ~/file_task3.txt
+[2]+  Stopped                 sleep 600
+[3]   Running                 sleep 600 &
+[4]   Running                 nice -n 10 sleep 600 &
+user1@eltex-practice2-pg2-v15:/root$ fg %1
+vim ~/file_task3.txt
+
+# 3.1.12. Отправьте сигнал 15 (SIGTERM) заданию sleep 600 и выполните команду jobs
+
+user1@eltex-practice2-pg2-v15:/root$ kill -9 29179
+
+# 3.1.13. Создайте перехватчик сигналов SIGINT и SIGQUIT внутри командного интерпретатора, который выводит сообщение «Меня голыми руками не возьмёшь!» (используйте встроенную команду trap) и отправьте сигналы самому себе 
+
+user1@eltex-practice2-pg2-v15:/root$ trap 'echo "Меня голыми руками не возьмёшь!"' SIGINT SIGQUIT
+Меня голыми руками не возьмёшь!root$ ^\
+Меня голыми руками не возьмёшь!      ^C
+
+Меня голыми руками не возьмёшь!root$ ^\
+Меня голыми руками не возьмёшь!
+
+    
