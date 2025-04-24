@@ -13,7 +13,6 @@ void calculate_areas(int start, int end, int *sides) {
 }
 
 int main(int argc, char *argv[]) {
-    // Отладочное сообщение: начало выполнения программы
     printf("Debug: Program started. PID = %d\n", getpid());
 
     // Проверка на наличие аргументов

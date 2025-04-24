@@ -17,7 +17,6 @@ void tokenize_input(char *input, char **args) {
 
 // Функция для вычисления суммы аргументов
 void sum(int argc, char *argv[]) {
-    printf("Debug: Entering sum function.\n");
     if (argc < 2) {
         printf("Usage: sum num1 num2 ...\n");
         return;
@@ -25,11 +24,58 @@ void sum(int argc, char *argv[]) {
 
     int total = 0;
     for (int i = 1; i < argc; i++) {
-        printf("Debug: Adding %d to total.\n", atoi(argv[i]));
         total += atoi(argv[i]);
     }
     printf("Sum: %d\n", total);
-    printf("Debug: Exiting sum function.\n");
+}
+
+// Функция для конкатенации строк
+void concat(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: concat str1 str2 ...\n");
+        return;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        printf("%s", argv[i]);
+        if (i < argc - 1) {
+            printf(" "); // Добавляем пробел между строками
+        }
+    }
+    printf("\n");
+}
+
+// Функция для поиска максимального числа
+void max(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: max num1 num2 ...\n");
+        return;
+    }
+
+    int maximum = atoi(argv[1]);
+    for (int i = 2; i < argc; i++) {
+        int current = atoi(argv[i]);
+        if (current > maximum) {
+            maximum = current;
+        }
+    }
+    printf("Max: %d\n", maximum);
+}
+
+// Функция для поиска самой длинной строки
+void longest(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: longest str1 str2 ...\n");
+        return;
+    }
+
+    char *longest_str = argv[1];
+    for (int i = 2; i < argc; i++) {
+        if (strlen(argv[i]) > strlen(longest_str)) {
+            longest_str = argv[i];
+        }
+    }
+    printf("Longest: %s\n", longest_str);
 }
 
 // Главная функция интерпретатора
@@ -37,36 +83,29 @@ int main() {
     char input[MAX_INPUT]; // Буфер для ввода пользователя
     char *args[MAX_INPUT]; // Массив аргументов
 
-    printf("Debug: Interpreter started.\n");
-
     while (1) {
         printf("> "); // Выводим приглашение
         fflush(stdout);
 
         // Читаем ввод пользователя
         if (fgets(input, sizeof(input), stdin) == NULL) {
-            printf("\nDebug: EOF detected. Exiting...\n");
-            break; // Выход из цикла при EOF (Ctrl+D)
+            printf("\n");
+            break; // Выход из цикла
         }
-
-        printf("Debug: User input received: '%s'\n", input);
 
         // Удаляем завершающий символ новой строки
         input[strcspn(input, "\n")] = '\0';
 
         // Разбиваем ввод на токены
-        printf("Debug: Tokenizing input...\n");
         tokenize_input(input, args);
 
         // Проверяем, что ввод не пустой
         if (args[0] == NULL) {
-            printf("Debug: Input is empty. Skipping...\n");
             continue;
         }
 
         // Обработка встроенной команды exit
         if (strcmp(args[0], "exit") == 0) {
-            printf("Debug: Exit command detected.\n");
             printf("Exiting...\n");
             break;
         }
@@ -76,43 +115,38 @@ int main() {
         while (args[argc] != NULL) {
             argc++;
         }
-        printf("Debug: Parsed %d arguments.\n", argc);
 
         // Создаем дочерний процесс
         pid_t pid = fork();
-        printf("Debug: Fork called. Fork returned PID = %d\n", pid);
 
         if (pid < 0) {
             perror("Fork failed");
         } else if (pid == 0) {
             // Дочерний процесс
-            printf("Debug: Child process started. PID = %d\n", getpid());
             if (strcmp(args[0], "sum") == 0) {
-                printf("Debug: Child process executing 'sum' command.\n");
                 sum(argc, args);
-                printf("Debug: Child process finished executing 'sum'. Exiting...\n");
-                exit(EXIT_SUCCESS); // Завершаем дочерний процесс
+            } else if (strcmp(args[0], "concat") == 0) {
+                concat(argc, args);
+            } else if (strcmp(args[0], "max") == 0) {
+                max(argc, args);
+            } else if (strcmp(args[0], "longest") == 0) {
+                longest(argc, args);
             } else {
                 // Попытка выполнить внешнюю команду
-                printf("Debug: Child process attempting to execute external command '%s'.\n", args[0]);
                 if (execvp(args[0], args) == -1) {
                     perror("Exec failed");
                 }
-                printf("Debug: External command execution failed. Exiting child process...\n");
                 exit(EXIT_FAILURE); // Если execvp не сработал
             }
+            exit(EXIT_SUCCESS); // Завершаем дочерний процесс
         } else {
             // Родительский процесс
-            printf("Debug: Parent process waiting for child (PID = %d) to finish.\n", pid);
             wait(NULL); // Ждем завершения дочернего процесса
-            printf("Debug: Child process has finished. Parent process continuing...\n");
         }
     }
 
-    printf("Debug: Interpreter exiting.\n");
     return 0;
 }
-
 /*
 Функции в коде:
 > sum 1 2 3 
